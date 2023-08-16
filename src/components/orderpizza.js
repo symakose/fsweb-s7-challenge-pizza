@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import Errorsfind from "./errorsfind";
-import Form from "./form";
+import Form1 from "./Form1";
 
 const malzemelerimiz = [
   "Pepperoni",
@@ -29,28 +28,26 @@ const schema = Yup.object().shape({
   adres: Yup.string()
     .min(2, "Adres uzunluğu yetersiz.")
     .required("Adres bilgilerinizi girmediniz."),
-  boyutSec: Yup.string().mixed().oneOf(["buyuk", "orta", "kucuk"]),
+  boyutSec: Yup.string().oneOf(["buyuk", "orta", "kucuk"]),
   kalinlik: Yup.string()
     .oneOf(["ince", "kalın"], "Kalınlık seçeneği ince veya kalın olmalıdır.")
     .required("Lütfen bir kalınlık seçeneği seçin"),
-  ekMalzemeler: Yup.mixed().oneOf([malzemelerimiz]),
+  ekMalzemeler: Yup.array()
+    .min(10, "En az 10 malzeme seçmelisiniz.")
+    .required("En az 10 malzeme seçmelisiniz."),
   siparisAdedi: Yup.number().min(1, "Siparişiniz en az 1 adet olmalıdır."),
   notlar: Yup.string(),
 });
 
 function OrderPizza() {
-  const [yeniSiparis, setYeniSiparis] = useState();
-  const [ekMalzemeData, setEkMalzemeData] = useState();
-
-  const [checkboxForm, setCheckboxForm] = useState({
-    ekMalzemeler: [],
-  });
+  const [yeniSiparis, setYeniSiparis] = useState(null);
+  const [ekMalzemeData, setEkMalzemeData] = useState({ ekMalzemeler: [] });
   const [formData, setFormData] = useState({
     name: "",
     adres: "",
     boyutSec: "",
     kalinlik: "",
-    ekMalzemeler: "",
+    ekMalzemeler: [],
     siparisAdedi: 0,
     notlar: "",
   });
@@ -69,29 +66,27 @@ function OrderPizza() {
     ekMalzemeler: [],
   });
 
-  const checkFormErrors = (name, value) => {
-    Yup.reach(schema, name)
-      .validate(value)
-      .then(() => {
-        setCheckErrors({
-          ...checkErrors,
-          [name]: "",
-        });
-        setErrors({
-          ...errors,
-          [name]: "",
-        });
-      })
-      .catch((err) => {
-        setCheckErrors({
-          ...checkErrors,
-          [name]: err.errors[0],
-        });
-        setErrors({
-          ...errors,
-          [name]: err.errors[0],
-        });
+  const checkFormErrors = async (name, value) => {
+    try {
+      await Yup.reach(schema, name).validate(value);
+      setCheckErrors({
+        ...checkErrors,
+        [name]: "",
       });
+      setErrors({
+        ...errors,
+        [name]: "",
+      });
+    } catch (err) {
+      setCheckErrors({
+        ...checkErrors,
+        [name]: err.errors[0],
+      });
+      setErrors({
+        ...errors,
+        [name]: err.errors[0],
+      });
+    }
   };
 
   const [disabled, setDisabled] = useState(true);
@@ -103,12 +98,13 @@ function OrderPizza() {
     const { name, value, checked } = event.target;
 
     if (checked !== undefined) {
-      const { ekMalzemeler } = checkboxForm;
-      setCheckboxForm({
-        ...checkboxForm,
-        [name]: checked
-          ? [...ekMalzemeler, value]
-          : ekMalzemeler.filter((item) => item !== value),
+      const updatedEkMalzemeler = checked
+        ? [...formData.ekMalzemeler, value]
+        : formData.ekMalzemeler.filter((item) => item !== value);
+
+      setFormData({
+        ...formData,
+        ekMalzemeler: updatedEkMalzemeler,
       });
     } else {
       checkFormErrors(name, value);
@@ -122,8 +118,6 @@ function OrderPizza() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const yeniCheckbox = { ekMalzemeler: checkboxForm.ekMalzemeler };
-
     const yeniSiparisler = {
       name: formData.name,
       adres: formData.adres,
@@ -135,13 +129,9 @@ function OrderPizza() {
     };
 
     axios
-      .post("https://reqres.in/api/orders", { yeniCheckbox, yeniSiparisler })
+      .post("https://reqres.in/api/orders", { yeniSiparisler })
       .then((resp) => {
         console.log("Sipariş Detayları : ", resp.data.yeniSiparisler);
-        console.log(
-          "Pizza İçin Ek Malzemeler : ",
-          resp.data.yeniCheckbox.ekMalzemeler
-        );
         console.log("İsim Soyisim : ", resp.data.yeniSiparisler.name);
         console.log("Adres : ", resp.data.yeniSiparisler.adres);
         console.log(
@@ -151,16 +141,10 @@ function OrderPizza() {
         console.log("Pizza Boyutu : ", resp.data.yeniSiparisler.boyutSec);
         console.log("Notlar : ", resp.data.yeniSiparisler.notlar);
         console.log("Sipariş Adeti : ", resp.data.yeniSiparisler.siparisAdedi);
-        console.log(
-          yeniCheckbox.ekMalzemeler.map(
-            (index, key) => ` ${key + 1}.Ek Malzemeler : ${index} `
-          )
-        );
+        console.log("Ek Malzemeler : ", resp.data.yeniSiparisler.ekMalzemeler);
+
         setYeniSiparis(resp.data.yeniSiparisler);
-        setEkMalzemeData(resp.data.yeniCheckbox);
-        setCheckboxForm({
-          ekMalzemeler: [],
-        });
+        setEkMalzemeData({ ekMalzemeler: [] });
         setFormData({
           name: "",
           adres: "",
@@ -168,6 +152,7 @@ function OrderPizza() {
           kalinlik: "",
           notlar: "",
           siparisAdedi: 0,
+          ekMalzemeler: [],
         });
       })
       .catch((err) => {
@@ -176,29 +161,33 @@ function OrderPizza() {
   };
 
   return (
-    <>
-      <div className="Container">
-        <h3>Sipariş Oluştur</h3>
-        <hr />
-        <Errorsfind errors={errors} />
-        <form onSubmit={handleSubmit} id="pizza-form">
-          <Form
-            disabled={disabled}
-            handleChange={handleChange}
-            malzemelerimiz={malzemelerimiz}
-            formData={formData}
-          />
-        </form>
+    <div className="Container">
+      <h3>Sipariş Oluştur</h3>
+      <br />
+      <br />
+      <Errorsfind errors={errors} />
+      <form onSubmit={handleSubmit} id="pizza-form">
+        <Form1
+          disabled={disabled}
+          handleChange={handleChange}
+          malzemelerimiz={malzemelerimiz}
+          formData={formData}
+        />
+      </form>
 
-        <div>
-          {yeniSiparis && (
-            <div className="alertSiparis">
-              <p>Pizza'nız Hazırlanıyor!</p>
-            </div>
-          )}
-        </div>
+      <div>
+        {yeniSiparis && (
+          <div className="alertSiparis">
+            <p>Pizza'nız Hazırlanıyor!</p>
+            <p>
+              Sipariş Detayları: {yeniSiparis.name}, {yeniSiparis.adres},{" "}
+              {yeniSiparis.boyutSec}, {yeniSiparis.kalinlik},
+              {yeniSiparis.siparisAdedi}
+            </p>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }
 
