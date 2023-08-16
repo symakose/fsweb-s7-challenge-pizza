@@ -1,6 +1,5 @@
 import React from "react";
 import { Input, Label, FormGroup, Button, Form as RSForm } from "reactstrap";
-import "./Orderpizza";
 
 function OrderForm({
   malzemelerimiz,
@@ -27,6 +26,7 @@ function OrderForm({
       </FormGroup>
 
       {/* Adres için div oluştur. */}
+
       <FormGroup className="adresBilgi">
         <Label htmlFor="adres" className="adresBilgi">
           <b>Adres</b>
@@ -41,7 +41,6 @@ function OrderForm({
           placeholder="Lütfen adres bilgilerinizi belirtiniz."
         />
       </FormGroup>
-
       {/* Boyut bilgisi için div oluştur. */}
       <FormGroup className="boyutBilgi">
         <Label htmlFor="boyutSec" className="boyutBilgi">
@@ -62,7 +61,6 @@ function OrderForm({
           <option value="buyuk">Büyük</option>
         </Input>
       </FormGroup>
-
       {/* Kalınlık bilgisi için div oluştur. */}
       <FormGroup className="kalinlikBilgi">
         <Label>
@@ -93,7 +91,6 @@ function OrderForm({
           </Label>
         </div>
       </FormGroup>
-
       {/* Ek Malzemeler için div oluştur */}
       <FormGroup>
         <Label>
@@ -115,7 +112,6 @@ function OrderForm({
           ))}
         </div>
       </FormGroup>
-
       {/* Notlar için div oluştur */}
       <FormGroup className="formBilgileri notlarBilgi">
         <Label htmlFor="notlar" className="notlarBilgi">
@@ -131,7 +127,6 @@ function OrderForm({
           onChange={handleChange}
         />
       </FormGroup>
-
       {/* Sipariş Adedi için div oluştur */}
       <FormGroup>
         <Label htmlFor="adetBilgi">
@@ -147,7 +142,6 @@ function OrderForm({
           onChange={handleChange}
         />
       </FormGroup>
-
       {/* Siparişi Oluşturun butonu */}
       <div>
         <Button

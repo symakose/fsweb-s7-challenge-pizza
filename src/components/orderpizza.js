@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import axios from "axios";
-import Errorsfind from "./errorsfind";
-import Form1 from "./Form1";
+import Errorsfind from "./ErrorsFind";
+import OrderForm from "./OrderForm";
 
 const malzemelerimiz = [
   "Pepperoni",
@@ -40,7 +40,7 @@ const schema = Yup.object().shape({
 });
 
 function OrderPizza() {
-  const [yeniSiparis, setYeniSiparis] = useState(null);
+  const [yeniSiparis, setYeniSiparis] = useState();
   const [ekMalzemeData, setEkMalzemeData] = useState({ ekMalzemeler: [] });
   const [formData, setFormData] = useState({
     name: "",
@@ -167,11 +167,12 @@ function OrderPizza() {
       <br />
       <Errorsfind errors={errors} />
       <form onSubmit={handleSubmit} id="pizza-form">
-        <Form1
-          disabled={disabled}
-          handleChange={handleChange}
-          malzemelerimiz={malzemelerimiz}
+        <OrderForm
           formData={formData}
+          malzemelerimiz={malzemelerimiz}
+          handleChange={handleChange}
+          disabled={disabled}
+          handleSubmit={handleSubmit}
         />
       </form>
 

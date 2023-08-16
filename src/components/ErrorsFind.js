@@ -1,6 +1,6 @@
 import React from "react";
 
-function Errorsfind({ errors }) {
+function ErrorsFind({ errors }) {
   return (
     <>
       <div className="errors">
@@ -15,4 +15,4 @@ function Errorsfind({ errors }) {
   );
 }
 
-export default Errorsfind;
+export default ErrorsFind;
