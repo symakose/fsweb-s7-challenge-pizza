@@ -1,5 +1,5 @@
 import React from "react";
-import OrderForm from "../components/OrderForm";
+import OrderPizzaPage from "../components/OrderPizzaPage";
 
 const MainContent = () => {
   return (
@@ -26,7 +26,7 @@ const MainContent = () => {
             Pizzanız "Teknolojik Yemekler" farkıyla eşsiz bir ana eşlik etsin!
           </p>
         </div>
-        <OrderForm formData={formData} />
+        <OrderPizzaPage formData={formData} />
       </div>
     </>
   );

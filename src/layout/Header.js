@@ -9,6 +9,7 @@ const Header = () => {
         <a href="#">Seçenekler - </a>
         <a href="#">Siparişi Oluştur</a>
       </div>
+      <OrderPizzaPage formData={formData} />
     </header>
   );
 };
