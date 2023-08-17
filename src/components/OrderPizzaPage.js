@@ -33,13 +33,13 @@ const schema = Yup.object().shape({
     .oneOf(["ince", "kalın"], "Kalınlık seçeneği ince veya kalın olmalıdır.")
     .required("Lütfen bir kalınlık seçeneği seçin"),
   ekMalzemeler: Yup.array()
-    .min(10, "En az 10 malzeme seçmelisiniz.")
-    .required("En az 10 malzeme seçmelisiniz."),
+    .max(10, "En fazla 10 malzeme seçmelisiniz.")
+    .min(4, "En az 4  malzeme seçmelisiniz."),
   siparisAdedi: Yup.number().min(1, "Siparişiniz en az 1 adet olmalıdır."),
   notlar: Yup.string(),
 });
 
-function OrderPizza() {
+function OrderPizzaPage() {
   const [yeniSiparis, setYeniSiparis] = useState();
   const [ekMalzemeData, setEkMalzemeData] = useState({ ekMalzemeler: [] });
   const [formData, setFormData] = useState({
@@ -62,26 +62,19 @@ function OrderPizza() {
     notlar: "",
   });
 
-  const [checkErrors, setCheckErrors] = useState({
-    ekMalzemeler: [],
-  });
+  // const [checkErrors, setCheckErrors] = useState({
+  //   ekMalzemeler: [],
+  // });
 
   const checkFormErrors = async (name, value) => {
     try {
       await Yup.reach(schema, name).validate(value);
-      setCheckErrors({
-        ...checkErrors,
-        [name]: "",
-      });
+
       setErrors({
         ...errors,
         [name]: "",
       });
     } catch (err) {
-      setCheckErrors({
-        ...checkErrors,
-        [name]: err.errors[0],
-      });
       setErrors({
         ...errors,
         [name]: err.errors[0],
@@ -95,18 +88,21 @@ function OrderPizza() {
   }, [formData]);
 
   const handleChange = (event) => {
-    const { name, value, checked } = event.target;
-
-    if (checked !== undefined) {
+    const { name, value, checked, type } = event.target;
+    console.log("handleChange", name, value, checked);
+    if (type == "checkbox") {
       const updatedEkMalzemeler = checked
         ? [...formData.ekMalzemeler, value]
         : formData.ekMalzemeler.filter((item) => item !== value);
 
+      console.log("handleChange", name, value, checked);
       setFormData({
         ...formData,
         ekMalzemeler: updatedEkMalzemeler,
       });
+      checkFormErrors(name, updatedEkMalzemeler);
     } else {
+      console.log("handleChange", name, value, checked);
       checkFormErrors(name, value);
       setFormData({
         ...formData,
@@ -166,15 +162,14 @@ function OrderPizza() {
       <br />
       <br />
       <Errorsfind errors={errors} />
-      <form onSubmit={handleSubmit} id="pizza-form">
-        <OrderForm
-          formData={formData}
-          malzemelerimiz={malzemelerimiz}
-          handleChange={handleChange}
-          disabled={disabled}
-          handleSubmit={handleSubmit}
-        />
-      </form>
+
+      <OrderForm
+        formData={formData}
+        malzemelerimiz={malzemelerimiz}
+        handleChange={handleChange}
+        disabled={disabled}
+        handleSubmit={handleSubmit}
+      />
 
       <div>
         {yeniSiparis && (
@@ -192,4 +187,4 @@ function OrderPizza() {
   );
 }
 
-export default OrderPizza;
+export default OrderPizzaPage;
