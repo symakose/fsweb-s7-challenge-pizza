@@ -3,6 +3,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import Errorsfind from "./ErrorsFind";
 import OrderForm from "./OrderForm";
+import { useHistory } from "react-router-dom";
 
 const malzemelerimiz = [
   "Pepperoni",
@@ -51,6 +52,7 @@ function OrderPizzaPage() {
     siparisAdedi: 0,
     notlar: "",
   });
+  const history = useHistory();
 
   const [errors, setErrors] = useState({
     name: "",
@@ -114,18 +116,18 @@ function OrderPizzaPage() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const yeniSiparisler = {
-      name: formData.name,
-      adres: formData.adres,
-      boyutSec: formData.boyutSec,
-      kalinlik: formData.kalinlik,
-      ekMalzemeler: formData.ekMalzemeler,
-      siparisAdedi: formData.siparisAdedi,
-      notlar: formData.notlar,
-    };
+    // const yeniSiparisler = {
+    //   name: formData.name,
+    //   adres: formData.adres,
+    //   boyutSec: formData.boyutSec,
+    //   kalinlik: formData.kalinlik,
+    //   ekMalzemeler: formData.ekMalzemeler,
+    //   siparisAdedi: formData.siparisAdedi,
+    //   notlar: formData.notlar,
+    // };
 
     axios
-      .post("https://reqres.in/api/orders", { yeniSiparisler })
+      // .post("https://reqres.in/api/orders", yeniSiparisler)
       .then((resp) => {
         console.log("Sipariş Detayları : ", resp.data.yeniSiparisler);
         console.log("İsim Soyisim : ", resp.data.yeniSiparisler.name);
@@ -150,6 +152,7 @@ function OrderPizzaPage() {
           siparisAdedi: 0,
           ekMalzemeler: [],
         });
+        history.push("/onay");
       })
       .catch((err) => {
         console.log(err);

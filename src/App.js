@@ -1,19 +1,25 @@
 import React from "react";
 import OrderPizzaPage from "./components/OrderPizzaPage";
 import OnayPizzaPage from "./components/OnayPizzaPage";
-import { Router, Switch, Route } from "react-router-dom/";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import HomePage from "./components/HomePage";
 
 const App = () => {
   return (
     <>
-      <Router>
+      <BrowserRouter>
         <Switch>
-          <Route path="/" component={HomePage} />
-          <Route path="/pizza" component={OrderPizzaPage} />
-          <Route path="/OnayPizzaPage" component={OnayPizzaPage} />
+          <Route path="/onay">
+            <OnayPizzaPage />
+          </Route>
+          <Route path="/pizza">
+            <OrderPizzaPage />
+          </Route>
+          <Route path="/">
+            <HomePage />
+          </Route>
         </Switch>
-      </Router>
+      </BrowserRouter>
     </>
   );
 };

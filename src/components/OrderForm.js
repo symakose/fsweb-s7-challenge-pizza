@@ -1,5 +1,4 @@
 import React from "react";
-import { useHistory } from "react-router-dom/";
 import { Input, Label, FormGroup, Button, Form as RSForm } from "reactstrap";
 
 function OrderForm({
@@ -9,7 +8,7 @@ function OrderForm({
   disabled,
   handleSubmit,
 }) {
-  const history = useHistory();
+  // const history = useHistory();
 
   // const handleSubmit = (e) => {
   //   e.preventDefault();
@@ -168,7 +167,6 @@ function OrderForm({
           disabled={disabled}
           onClick={() => {
             handleSubmit();
-            history.push("/OnayPizzaPage");
           }}
         >
           Siparişi Oluştur
