@@ -40,10 +40,9 @@ const schema = Yup.object().shape({
   notlar: Yup.string(),
 });
 
-function OrderPizzaPage() {
-  const [yeniSiparis, setYeniSiparis] = useState();
+function OrderPizzaPage({ setYeniSiparis }) {
   const [ekMalzemeData, setEkMalzemeData] = useState({ ekMalzemeler: [] });
-  const [formData, setFormData] = useState({
+  const initualFormState = {
     name: "",
     adres: "",
     boyutSec: "",
@@ -51,7 +50,8 @@ function OrderPizzaPage() {
     ekMalzemeler: [],
     siparisAdedi: 0,
     notlar: "",
-  });
+  };
+  const [formData, setFormData] = useState(initualFormState);
   const history = useHistory();
 
   const [errors, setErrors] = useState({
@@ -116,42 +116,14 @@ function OrderPizzaPage() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // const yeniSiparisler = {
-    //   name: formData.name,
-    //   adres: formData.adres,
-    //   boyutSec: formData.boyutSec,
-    //   kalinlik: formData.kalinlik,
-    //   ekMalzemeler: formData.ekMalzemeler,
-    //   siparisAdedi: formData.siparisAdedi,
-    //   notlar: formData.notlar,
-    // };
-
     axios
-      // .post("https://reqres.in/api/orders", yeniSiparisler)
+      .post("https://reqres.in/api/orders", formData)
       .then((resp) => {
-        console.log("Sipariş Detayları : ", resp.data.yeniSiparisler);
-        console.log("İsim Soyisim : ", resp.data.yeniSiparisler.name);
-        console.log("Adres : ", resp.data.yeniSiparisler.adres);
-        console.log(
-          "Pizza Kalınlığı Seçiniz : ",
-          resp.data.yeniSiparisler.kalinlik
-        );
-        console.log("Pizza Boyutu : ", resp.data.yeniSiparisler.boyutSec);
-        console.log("Notlar : ", resp.data.yeniSiparisler.notlar);
-        console.log("Sipariş Adeti : ", resp.data.yeniSiparisler.siparisAdedi);
-        console.log("Ek Malzemeler : ", resp.data.yeniSiparisler.ekMalzemeler);
+        console.log("Sipariş Detayları : ", resp.data);
 
-        setYeniSiparis(resp.data.yeniSiparisler);
+        setYeniSiparis(resp.data);
         setEkMalzemeData({ ekMalzemeler: [] });
-        setFormData({
-          name: "",
-          adres: "",
-          boyutSec: "",
-          kalinlik: "",
-          notlar: "",
-          siparisAdedi: 0,
-          ekMalzemeler: [],
-        });
+        setFormData(initualFormState);
         history.push("/onay");
       })
       .catch((err) => {
@@ -174,18 +146,7 @@ function OrderPizzaPage() {
         handleSubmit={handleSubmit}
       />
 
-      <div>
-        {yeniSiparis && (
-          <div className="alertSiparis">
-            <p>Pizza'nız Hazırlanıyor!</p>
-            <p>
-              Sipariş Detayları: {yeniSiparis.name}, {yeniSiparis.adres},{" "}
-              {yeniSiparis.boyutSec}, {yeniSiparis.kalinlik},
-              {yeniSiparis.siparisAdedi}
-            </p>
-          </div>
-        )}
-      </div>
+      <div></div>
     </div>
   );
 }
